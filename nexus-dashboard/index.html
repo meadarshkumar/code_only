@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS // Kira Voss — Developer OS</title>
+<meta name="description" content="Kira Voss — Full-Stack Engineer. An interactive developer operating system: projects, skills, terminal, arcade and live system widgets.">
+
+<!-- Web fonts: display (Orbitron), utility/mono (JetBrains Mono), body (Inter) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⌁</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============================== -->
+<!-- LOADING SCREEN                 -->
+<!-- ============================== -->
+<div id="loading-screen" aria-hidden="true">
+  <div class="loading-inner">
+    <div class="loading-logo">
+      <svg viewBox="0 0 64 64" class="logo-mark" width="64" height="64" aria-hidden="true">
+        <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" class="logo-hex"/>
+        <text x="32" y="40" text-anchor="middle" class="logo-glyph">N</text>
+      </svg>
+      <span class="loading-word">NEXUS<span class="loading-cursor">_</span></span>
+    </div>
+    <div class="loading-bootlines" id="loading-bootlines" aria-live="polite"></div>
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill" id="loading-bar-fill"></div>
+    </div>
+    <div class="loading-percent" id="loading-percent">0%</div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- CUSTOM CURSOR                  -->
+<!-- ============================== -->
+<div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+<canvas id="cursor-trail" aria-hidden="true"></canvas>
+
+<!-- ============================== -->
+<!-- AMBIENT BACKGROUND LAYERS      -->
+<!-- ============================== -->
+<div class="bg-layer" aria-hidden="true">
+  <canvas id="bg-stars"></canvas>
+  <canvas id="bg-particles"></canvas>
+  <div class="aurora">
+    <span class="aurora-blob aurora-blob--cyan"></span>
+    <span class="aurora-blob aurora-blob--magenta"></span>
+    <span class="aurora-blob aurora-blob--violet"></span>
+  </div>
+  <div class="geo-shapes">
+    <span class="geo geo--tri"></span>
+    <span class="geo geo--ring"></span>
+    <span class="geo geo--square"></span>
+    <span class="geo geo--hex"></span>
+    <span class="geo geo--ring2"></span>
+  </div>
+  <div class="scanlines"></div>
+  <div class="mouse-glow" id="mouse-glow"></div>
+</div>
+
+<!-- ============================== -->
+<!-- SKIP LINK (a11y)               -->
+<!-- ============================== -->
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<!-- ============================== -->
+<!-- NAVIGATION                     -->
+<!-- ============================== -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#home" class="nav-logo" data-cursor-hover>
+      <svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true">
+        <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" fill="none" stroke="currentColor" stroke-width="4"/>
+      </svg>
+      <span>NEXUS<span class="accent-txt">_OS</span></span>
+    </a>
+
+    <nav class="nav-links" id="nav-links" aria-label="Primary">
+      <a href="#home" class="nav-link active" data-section="home">Home</a>
+      <a href="#about" class="nav-link" data-section="about">About</a>
+      <a href="#skills" class="nav-link" data-section="skills">Skills</a>
+      <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+      <a href="#achievements" class="nav-link" data-section="achievements">Achievements</a>
+      <a href="#deck" class="nav-link" data-section="deck">Deck</a>
+      <a href="#terminal" class="nav-link" data-section="terminal">Terminal</a>
+      <a href="#arcade" class="nav-link" data-section="arcade">Arcade</a>
+      <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+      <span class="nav-indicator" id="nav-indicator" aria-hidden="true"></span>
+    </nav>
+
+    <div class="navbar-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color protocol" data-cursor-hover>
+        <span class="theme-toggle-dot"></span>
+      </button>
+      <button class="hamburger" id="hamburger" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============================== -->
+  <!-- HERO / LANDING                 -->
+  <!-- ============================== -->
+  <section id="home" class="hero" aria-label="Introduction">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow reveal-up"><span class="dot-pulse"></span> SYSTEM ONLINE // BUILD 2.1.0</p>
+      <h1 class="hero-title reveal-up" style="--d:0.08s">
+        <span class="hero-hello">Hi, I'm</span>
+        <span class="hero-name" data-glitch="KIRA VOSS">KIRA VOSS</span>
+      </h1>
+      <p class="hero-role reveal-up" style="--d:0.16s">
+        <span id="typing-target"></span><span class="typing-caret">|</span>
+      </p>
+      <p class="hero-desc reveal-up" style="--d:0.24s">
+        I design and build resilient, high-performance software — from neon-lit interfaces
+        to the systems humming quietly underneath them. Currently compiling ideas into
+        production at NEXUS Labs.
+      </p>
+      <div class="hero-actions reveal-up" style="--d:0.32s">
+        <a href="#projects" class="btn btn-primary magnetic" data-cursor-hover>
+          <span>View Projects</span>
+        </a>
+        <a href="#terminal" class="btn btn-ghost magnetic" data-cursor-hover>
+          <span>Open Terminal</span>
+        </a>
+      </div>
+      <div class="hero-meta reveal-up" style="--d:0.4s">
+        <div class="hero-meta-item"><strong id="hero-count-projects">0</strong><span>Projects</span></div>
+        <div class="hero-meta-item"><strong id="hero-count-years">0</strong><span>Years</span></div>
+        <div class="hero-meta-item"><strong id="hero-count-commits">0</strong><span>Commits</span></div>
+      </div>
+    </div>
+    <a href="#about" class="scroll-cue" aria-label="Scroll to About section" data-cursor-hover>
+      <span class="scroll-cue-mouse"><span></span></span>
+      <span class="scroll-cue-label">SCROLL</span>
+    </a>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ABOUT                          -->
+  <!-- ============================== -->
+  <section id="about" class="section" aria-label="About">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/about.sys</p>
+        <h2 class="section-title">About the Operator</h2>
+        <p class="section-sub">A quick systems check on who's behind the console.</p>
+      </header>
+
+      <div class="about-grid">
+        <!-- Profile Card -->
+        <article class="panel profile-card reveal-up">
+          <div class="panel-titlebar">
+            <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+            <span class="panel-titlebar-label">profile.exe</span>
+          </div>
+          <div class="profile-body">
+            <div class="avatar" aria-hidden="true">
+              <span class="avatar-ring"></span>
+              <span class="avatar-glyph">KV</span>
+            </div>
+            <h3 class="profile-name">Kira Voss</h3>
+            <p class="profile-role">Full-Stack Engineer &amp; Systems Architect</p>
+            <p class="profile-status"><span class="status-led"></span> ONLINE — accepting new signals</p>
+            <p class="profile-loc">📍 Neo-Kolkata Sector, IN</p>
+
+            <div class="profile-counters">
+              <div class="counter-block">
+                <span class="counter-num" data-counter data-target="6">0</span>
+                <span class="counter-label">Years Exp.</span>
+              </div>
+              <div class="counter-block">
+                <span class="counter-num" data-counter data-target="48">0</span>
+                <span class="counter-label">Projects Shipped</span>
+              </div>
+              <div class="counter-block">
+                <span class="counter-num" data-counter data-target="1240">0</span>
+                <span class="counter-label">Coffees</span>
+              </div>
+              <div class="counter-block">
+                <span class="counter-num" data-counter data-target="32">0</span>
+                <span class="counter-label">Happy Clients</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Skill bars + Timeline -->
+        <div class="about-right">
+          <article class="panel reveal-up" style="--d:0.1s">
+            <div class="panel-titlebar">
+              <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+              <span class="panel-titlebar-label">core-stack.dat</span>
+            </div>
+            <div class="panel-body">
+              <ul class="skillbars" role="list">
+                <li class="skillbar">
+                  <div class="skillbar-top"><span>Frontend Engineering</span><span class="skillbar-pct">92%</span></div>
+                  <div class="skillbar-track"><div class="skillbar-fill" data-fill="92"></div></div>
+                </li>
+                <li class="skillbar">
+                  <div class="skillbar-top"><span>Backend &amp; APIs</span><span class="skillbar-pct">88%</span></div>
+                  <div class="skillbar-track"><div class="skillbar-fill" data-fill="88"></div></div>
+                </li>
+                <li class="skillbar">
+                  <div class="skillbar-top"><span>DevOps &amp; Infra</span><span class="skillbar-pct">76%</span></div>
+                  <div class="skillbar-track"><div class="skillbar-fill" data-fill="76"></div></div>
+                </li>
+                <li class="skillbar">
+                  <div class="skillbar-top"><span>UI / Motion Design</span><span class="skillbar-pct">84%</span></div>
+                  <div class="skillbar-track"><div class="skillbar-fill" data-fill="84"></div></div>
+                </li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="panel reveal-up" style="--d:0.18s">
+            <div class="panel-titlebar">
+              <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+              <span class="panel-titlebar-label">learning-path.log</span>
+            </div>
+            <div class="panel-body">
+              <ol class="timeline" role="list">
+                <li class="timeline-item">
+                  <span class="timeline-year">2019</span>
+                  <p><strong>First commit.</strong> Learned HTML/CSS/JS, fell in love with building things people can click on.</p>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-year">2021</span>
+                  <p><strong>Backend deep-dive.</strong> Databases, APIs, and the joy of a 200 response.</p>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-year">2022</span>
+                  <p><strong>Shipped at scale.</strong> First production system serving 100k+ users.</p>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-year">2024</span>
+                  <p><strong>Systems &amp; infra.</strong> Cloud architecture, CI/CD, observability.</p>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-year">2026</span>
+                  <p><strong>Now.</strong> Building interfaces that feel alive — like this one.</p>
+                </li>
+              </ol>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- SKILLS                         -->
+  <!-- ============================== -->
+  <section id="skills" class="section" aria-label="Skills">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/skills.dat</p>
+        <h2 class="section-title">Skill Matrix</h2>
+        <p class="section-sub">Filter by category. Hover a card to tilt the panel.</p>
+      </header>
+
+      <div class="filter-bar reveal-up" role="tablist" aria-label="Filter skills by category">
+        <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button class="filter-btn" data-filter="frontend" role="tab" aria-selected="false">Frontend</button>
+        <button class="filter-btn" data-filter="backend" role="tab" aria-selected="false">Backend</button>
+        <button class="filter-btn" data-filter="tools" role="tab" aria-selected="false">Tools</button>
+        <button class="filter-btn" data-filter="design" role="tab" aria-selected="false">Design</button>
+      </div>
+
+      <div class="skills-grid" id="skills-grid">
+        <!-- Skill cards injected/decorated via JS for circular progress; base markup here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- PROJECTS                       -->
+  <!-- ============================== -->
+  <section id="projects" class="section" aria-label="Projects">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/projects.dir</p>
+        <h2 class="section-title">Deployed Builds</h2>
+        <p class="section-sub">A sample of systems currently running in production.</p>
+      </header>
+
+      <div class="projects-grid" id="projects-grid">
+        <!-- Project cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ACHIEVEMENTS                   -->
+  <!-- ============================== -->
+  <section id="achievements" class="section" aria-label="Achievements">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/achievements.log</p>
+        <h2 class="section-title">Mission Log</h2>
+        <p class="section-sub">Milestones, certifications, and the daily grind.</p>
+      </header>
+
+      <div class="achieve-counters reveal-up">
+        <div class="achieve-counter">
+          <span class="counter-num big" data-counter data-target="14">0</span>
+          <span class="counter-label">Certifications</span>
+        </div>
+        <div class="achieve-counter">
+          <span class="counter-num big" data-counter data-target="9">0</span>
+          <span class="counter-label">Hackathons Won</span>
+        </div>
+        <div class="achieve-counter">
+          <span class="counter-num big" data-counter data-target="312">0</span>
+          <span class="counter-label">Open-Source PRs</span>
+        </div>
+        <div class="achieve-counter">
+          <span class="counter-num big" data-counter data-target="1870">0</span>
+          <span class="counter-label">GitHub Stars</span>
+        </div>
+      </div>
+
+      <div class="achieve-grid">
+        <article class="panel reveal-up">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">certificates.pdf</span></div>
+          <div class="panel-body">
+            <div class="cert-list">
+              <div class="cert-card">
+                <div class="cert-card-face cert-front">
+                  <span class="cert-badge">🛡️</span>
+                  <p>Cloud Systems Architect</p>
+                </div>
+                <div class="cert-card-face cert-back"><p>Issued 2025 · NEXUS Cloud Academy</p></div>
+              </div>
+              <div class="cert-card">
+                <div class="cert-card-face cert-front">
+                  <span class="cert-badge">⚙️</span>
+                  <p>Advanced Distributed Systems</p>
+                </div>
+                <div class="cert-card-face cert-back"><p>Issued 2024 · OpenStack Institute</p></div>
+              </div>
+              <div class="cert-card">
+                <div class="cert-card-face cert-front">
+                  <span class="cert-badge">🔐</span>
+                  <p>Applied Security Engineering</p>
+                </div>
+                <div class="cert-card-face cert-back"><p>Issued 2023 · CyberForge Labs</p></div>
+              </div>
+              <div class="cert-card">
+                <div class="cert-card-face cert-front">
+                  <span class="cert-badge">🎨</span>
+                  <p>Motion &amp; Interface Design</p>
+                </div>
+                <div class="cert-card-face cert-back"><p>Issued 2022 · Prism Design School</p></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel reveal-up" style="--d:0.1s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">streak.sys</span></div>
+          <div class="panel-body">
+            <p class="streak-headline"><span id="streak-count">47</span> day streak <span class="streak-flame">🔥</span></p>
+            <div class="heatmap" id="heatmap" aria-label="Contribution heatmap, last 12 weeks"></div>
+            <div class="lang-stats">
+              <div class="lang-row"><span>TypeScript</span><div class="lang-track"><div class="lang-fill" style="--w:38%; --c:var(--cyan)"></div></div><span>38%</span></div>
+              <div class="lang-row"><span>Python</span><div class="lang-track"><div class="lang-fill" style="--w:26%; --c:var(--violet)"></div></div><span>26%</span></div>
+              <div class="lang-row"><span>Rust</span><div class="lang-track"><div class="lang-fill" style="--w:18%; --c:var(--magenta)"></div></div><span>18%</span></div>
+              <div class="lang-row"><span>Go</span><div class="lang-track"><div class="lang-fill" style="--w:12%; --c:var(--amber)"></div></div><span>12%</span></div>
+              <div class="lang-row"><span>Other</span><div class="lang-track"><div class="lang-fill" style="--w:6%; --c:var(--text-dim)"></div></div><span>6%</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- CONTROL DECK: clock/weather/stats/productivity -->
+  <!-- ============================== -->
+  <section id="deck" class="section" aria-label="Control deck">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/control-deck.sys</p>
+        <h2 class="section-title">Control Deck</h2>
+        <p class="section-sub">Live widgets. Real time, real (fake) weather, real tools.</p>
+      </header>
+
+      <div class="deck-grid">
+
+        <!-- Clock widget -->
+        <article class="panel deck-card reveal-up">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">chronos.clock</span></div>
+          <div class="panel-body clock-body">
+            <div class="analog-clock" id="analog-clock" aria-hidden="true">
+              <div class="clock-tick" style="--i:0"></div><div class="clock-tick" style="--i:1"></div><div class="clock-tick" style="--i:2"></div><div class="clock-tick" style="--i:3"></div>
+              <div class="clock-tick" style="--i:4"></div><div class="clock-tick" style="--i:5"></div><div class="clock-tick" style="--i:6"></div><div class="clock-tick" style="--i:7"></div>
+              <div class="clock-tick" style="--i:8"></div><div class="clock-tick" style="--i:9"></div><div class="clock-tick" style="--i:10"></div><div class="clock-tick" style="--i:11"></div>
+              <div class="hand hand-hour" id="hand-hour"></div>
+              <div class="hand hand-min" id="hand-min"></div>
+              <div class="hand hand-sec" id="hand-sec"></div>
+              <div class="clock-hub"></div>
+            </div>
+            <p class="digital-clock" id="digital-clock">00:00:00</p>
+            <p class="digital-date" id="digital-date">—</p>
+            <ul class="world-clocks" id="world-clocks"></ul>
+          </div>
+        </article>
+
+        <!-- Weather widget -->
+        <article class="panel deck-card reveal-up" style="--d:0.06s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">atmos.weather</span></div>
+          <div class="panel-body weather-body">
+            <div class="weather-icon" id="weather-icon" aria-hidden="true">☀️</div>
+            <p class="weather-temp"><span id="weather-temp">27</span>°C</p>
+            <p class="weather-loc" id="weather-loc">Neo-Kolkata Sector</p>
+            <p class="weather-desc" id="weather-desc">Clear synthetic skies</p>
+            <div class="weather-stats">
+              <div><span>💧 Humidity</span><strong id="weather-humidity">54%</strong></div>
+              <div><span>🌬️ Wind</span><strong id="weather-wind">12 km/h</strong></div>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="weather-refresh" data-cursor-hover>Rescan Atmosphere</button>
+          </div>
+        </article>
+
+        <!-- Dev stats widget -->
+        <article class="panel deck-card reveal-up" style="--d:0.12s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">stats.telemetry</span></div>
+          <div class="panel-body">
+            <ul class="dev-stats">
+              <li><span data-counter data-target="48">0</span><label>Projects Completed</label></li>
+              <li><span data-counter data-target="5820">0</span><label>GitHub Commits</label></li>
+              <li><span data-counter data-target="482300">0</span><label>Lines of Code</label></li>
+              <li><span data-counter data-target="1240">0</span><label>Coffee Cups</label></li>
+              <li><span data-counter data-target="9600">0</span><label>Coding Hours</label></li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Productivity: Pomodoro -->
+        <article class="panel deck-card reveal-up" style="--d:0.18s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">focus.pomodoro</span></div>
+          <div class="panel-body pomo-body">
+            <p class="pomo-mode" id="pomo-mode">FOCUS</p>
+            <p class="pomo-time" id="pomo-time">25:00</p>
+            <div class="pomo-actions">
+              <button class="btn btn-primary btn-sm" id="pomo-start" data-cursor-hover>Start</button>
+              <button class="btn btn-ghost btn-sm" id="pomo-reset" data-cursor-hover>Reset</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Productivity: Stopwatch -->
+        <article class="panel deck-card reveal-up" style="--d:0.22s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">stopwatch.exe</span></div>
+          <div class="panel-body pomo-body">
+            <p class="pomo-time" id="sw-time">00:00.0</p>
+            <div class="pomo-actions">
+              <button class="btn btn-primary btn-sm" id="sw-start" data-cursor-hover>Start</button>
+              <button class="btn btn-ghost btn-sm" id="sw-lap" data-cursor-hover>Lap</button>
+              <button class="btn btn-ghost btn-sm" id="sw-reset" data-cursor-hover>Reset</button>
+            </div>
+            <ul class="sw-laps" id="sw-laps"></ul>
+          </div>
+        </article>
+
+        <!-- Productivity: Countdown -->
+        <article class="panel deck-card reveal-up" style="--d:0.26s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">countdown.sys</span></div>
+          <div class="panel-body pomo-body">
+            <p class="pomo-time" id="cd-time">05:00</p>
+            <div class="pomo-actions">
+              <input type="number" id="cd-input" min="1" max="180" value="5" aria-label="Countdown minutes" class="cd-input">
+              <button class="btn btn-primary btn-sm" id="cd-start" data-cursor-hover>Start</button>
+              <button class="btn btn-ghost btn-sm" id="cd-reset" data-cursor-hover>Reset</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Productivity: Notes -->
+        <article class="panel deck-card deck-card--wide reveal-up" style="--d:0.3s">
+          <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">scratchpad.notes</span></div>
+          <div class="panel-body">
+            <textarea id="notes-area" class="notes-area" placeholder="Jot something down... autosaves locally." aria-label="Notes"></textarea>
+            <p class="notes-status" id="notes-status">Saved</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- TERMINAL                       -->
+  <!-- ============================== -->
+  <section id="terminal" class="section" aria-label="Interactive terminal">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/terminal</p>
+        <h2 class="section-title">Live Terminal</h2>
+        <p class="section-sub">Type <code>help</code> to see available commands.</p>
+      </header>
+
+      <div class="panel terminal-panel reveal-up">
+        <div class="panel-titlebar">
+          <span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span>
+          <span class="panel-titlebar-label">kira@nexus:~</span>
+        </div>
+        <div class="terminal-body" id="terminal-body" tabindex="0">
+          <div class="terminal-output" id="terminal-output"></div>
+          <div class="terminal-input-row">
+            <span class="terminal-prompt">kira@nexus:~$</span>
+            <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal command input">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- ARCADE / MINI GAMES            -->
+  <!-- ============================== -->
+  <section id="arcade" class="section" aria-label="Mini games">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/arcade.exe</p>
+        <h2 class="section-title">Arcade</h2>
+        <p class="section-sub">A short break, compiled into three games.</p>
+      </header>
+
+      <div class="game-tabs reveal-up" role="tablist" aria-label="Choose a game">
+        <button class="filter-btn active" data-game="memory" role="tab" aria-selected="true">Memory Grid</button>
+        <button class="filter-btn" data-game="rps" role="tab" aria-selected="false">Rock · Paper · Scissors</button>
+        <button class="filter-btn" data-game="color" role="tab" aria-selected="false">Color Guess</button>
+      </div>
+
+      <!-- Memory Game -->
+      <article class="panel game-panel" id="game-memory" data-game-panel="memory">
+        <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">memory.grid</span></div>
+        <div class="panel-body">
+          <div class="game-hud">
+            <span>Moves: <strong id="memory-moves">0</strong></span>
+            <span>Matches: <strong id="memory-matches">0</strong>/8</span>
+            <button class="btn btn-ghost btn-sm" id="memory-restart" data-cursor-hover>Restart</button>
+          </div>
+          <div class="memory-grid" id="memory-grid" aria-label="Memory matching game grid"></div>
+        </div>
+      </article>
+
+      <!-- RPS Game -->
+      <article class="panel game-panel" id="game-rps" data-game-panel="rps" hidden>
+        <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">rps.duel</span></div>
+        <div class="panel-body">
+          <div class="game-hud">
+            <span>You: <strong id="rps-score-player">0</strong></span>
+            <span>CPU: <strong id="rps-score-cpu">0</strong></span>
+            <button class="btn btn-ghost btn-sm" id="rps-restart" data-cursor-hover>Reset Score</button>
+          </div>
+          <div class="rps-arena">
+            <div class="rps-side"><span class="rps-emoji" id="rps-player-emoji">❔</span><p>You</p></div>
+            <p class="rps-vs">VS</p>
+            <div class="rps-side"><span class="rps-emoji" id="rps-cpu-emoji">❔</span><p>CPU</p></div>
+          </div>
+          <p class="rps-result" id="rps-result">Choose your weapon.</p>
+          <div class="rps-choices">
+            <button class="rps-btn" data-choice="rock" data-cursor-hover>✊<span>Rock</span></button>
+            <button class="rps-btn" data-choice="paper" data-cursor-hover>✋<span>Paper</span></button>
+            <button class="rps-btn" data-choice="scissors" data-cursor-hover>✌️<span>Scissors</span></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Color Guess Game -->
+      <article class="panel game-panel" id="game-color" data-game-panel="color" hidden>
+        <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">color.guess</span></div>
+        <div class="panel-body">
+          <div class="game-hud">
+            <span>Score: <strong id="color-score">0</strong></span>
+            <span>Round: <strong id="color-round">1</strong></span>
+            <button class="btn btn-ghost btn-sm" id="color-restart" data-cursor-hover>Restart</button>
+          </div>
+          <p class="color-target-label">Which swatch matches: <code id="color-target-code">#000000</code></p>
+          <div class="color-grid" id="color-grid"></div>
+          <p class="color-result" id="color-result">Pick the matching color.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================== -->
+  <!-- CONTACT / FOOTER                -->
+  <!-- ============================== -->
+  <section id="contact" class="section" aria-label="Contact">
+    <div class="section-inner">
+      <header class="section-head reveal-up">
+        <p class="window-path">~/contact.sh</p>
+        <h2 class="section-title">Establish a Connection</h2>
+        <p class="section-sub">Send a transmission. Response time: under 24 hours.</p>
+      </header>
+
+      <div class="panel contact-panel reveal-up">
+        <div class="panel-titlebar"><span class="dot dot--r"></span><span class="dot dot--y"></span><span class="dot dot--g"></span><span class="panel-titlebar-label">new_message.form</span></div>
+        <form class="contact-form panel-body" id="contact-form" novalidate>
+          <div class="field">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" required minlength="2" autocomplete="name">
+            <span class="field-error" id="cf-name-error" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" required autocomplete="email">
+            <span class="field-error" id="cf-email-error" role="alert"></span>
+          </div>
+          <div class="field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" required minlength="10" rows="4"></textarea>
+            <span class="field-error" id="cf-message-error" role="alert"></span>
+          </div>
+          <button type="submit" class="btn btn-primary magnetic" data-cursor-hover>Transmit Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== -->
+<!-- FOOTER                          -->
+<!-- ============================== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">NEXUS<span class="accent-txt">_OS</span></div>
+    <ul class="footer-social" aria-label="Social links">
+      <li><a href="#" data-cursor-hover aria-label="GitHub" data-social>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.75 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.53-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.78 1.08.78 2.18v3.23c0 .3.2.66.79.55A10.52 10.52 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+      </a></li>
+      <li><a href="#" data-cursor-hover aria-label="LinkedIn" data-social>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z"/></svg>
+      </a></li>
+      <li><a href="#" data-cursor-hover aria-label="X (Twitter)" data-social>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M18.24 3H21l-6.5 7.43L22.2 21h-6.13l-4.8-6.28L5.72 21H3l6.95-7.94L2.1 3h6.28l4.34 5.74L18.24 3Zm-1.07 16.17h1.7L7.9 4.74H6.08l11.09 14.43Z"/></svg>
+      </a></li>
+      <li><a href="#" data-cursor-hover aria-label="Email" data-social>
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13Zm2.2.5 7.8 6.2L19.8 6H4.2Zm15.8 1.6-7.4 5.9a1 1 0 0 1-1.2 0L4 7.6V18h16V7.6Z"/></svg>
+      </a></li>
+    </ul>
+    <p class="footer-copy" id="footer-copy">© <span id="footer-year"></span> Kira Voss — All systems nominal.</p>
+  </div>
+</footer>
+
+<!-- ============================== -->
+<!-- FLOATING WIDGETS                -->
+<!-- ============================== -->
+
+<!-- Music Player -->
+<div class="music-player" id="music-player">
+  <button class="music-toggle-tab" id="music-toggle-tab" aria-label="Toggle music player" data-cursor-hover>♪</button>
+  <div class="music-inner">
+    <div class="music-art" id="music-art" aria-hidden="true"><span class="music-bars"><i></i><i></i><i></i><i></i></span></div>
+    <div class="music-meta">
+      <p class="music-title" id="music-title">Neon Rain</p>
+      <p class="music-artist" id="music-artist">Synthwave Drift</p>
+      <div class="music-progress-track" id="music-progress-track">
+        <div class="music-progress-fill" id="music-progress-fill"></div>
+      </div>
+      <div class="music-time-row">
+        <span id="music-time-current">0:00</span><span id="music-time-total">3:24</span>
+      </div>
+    </div>
+    <div class="music-controls">
+      <button id="music-prev" aria-label="Previous track" data-cursor-hover>⏮</button>
+      <button id="music-play" aria-label="Play or pause" data-cursor-hover>▶</button>
+      <button id="music-next" aria-label="Next track" data-cursor-hover>⏭</button>
+      <div class="music-volume">
+        <span aria-hidden="true">🔊</span>
+        <input type="range" id="music-volume" min="0" max="100" value="70" aria-label="Volume">
+      </div>
+    </div>
+    <ul class="music-playlist" id="music-playlist"></ul>
+  </div>
+</div>
+
+<!-- Back to top -->
+<button class="back-to-top" id="back-to-top" aria-label="Back to top" data-cursor-hover>▲</button>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close" aria-label="Close dialog" data-cursor-hover>✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- ============================== -->
+<!-- SCRIPTS (order matters)         -->
+<!-- ============================== -->
+<script src="js/particles.js"></script>
+<script src="js/animations.js"></script>
+<script src="js/terminal.js"></script>
+<script src="js/games.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
