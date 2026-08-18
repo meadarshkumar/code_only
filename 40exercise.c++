@@ -98,4 +98,3 @@ int main (){
   cout<<" sum of digits ="<< obj.sumofDigits(n)<< endl;
   return 0;
 }
-7
